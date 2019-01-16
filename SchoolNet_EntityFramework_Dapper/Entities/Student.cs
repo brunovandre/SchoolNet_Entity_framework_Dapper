@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SchoolNet_EntityFramework.Entities
+namespace SchoolNet_EntityFramework_Dapper.Entities
 {
     public class Student
     {
-        public int Id { get; set; }
+        public virtual int Id { get; set; }
+
+        private int StudentId { get; set; }        
         public string FullName { get; set; }
         public int Age { get; set; }
 

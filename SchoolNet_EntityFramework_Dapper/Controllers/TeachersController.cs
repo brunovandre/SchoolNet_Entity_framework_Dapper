@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SchoolNet_EntityFramework.Context;
-using SchoolNet_EntityFramework.Entities;
+using SchoolNet_EntityFramework_Dapper.Context;
+using SchoolNet_EntityFramework_Dapper.Entities;
+using Slapper;
 
-namespace SchoolNet_EntityFramework.Controllers
+namespace SchoolNet_EntityFramework_Dapper.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -24,14 +26,44 @@ namespace SchoolNet_EntityFramework.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var teachers = await _context.Teachers.ToListAsync();
+            var data = await _context.Database.GetDbConnection().QueryAsync<dynamic>(@"
+                SELECT T.TeacherId AS Id,
+                       T.FirstName,
+                       T.LastName,
+                       SC.StudentClassId AS StudentClasses_Id,
+                       SC.CourseId AS StudentClasses_CourseId,
+                       SC.TeacherId AS StudentClasses_TeacherId,
+                       SC.StudentId AS StudentClasses_StudentId
+                FROM   Teacher as T INNER JOIN StudentClass as SC
+                ON     SC.TeacherId = T.TeacherId");
+
+            AutoMapper.Configuration.AddIdentifier(typeof(Teacher), "Id");
+            AutoMapper.Configuration.AddIdentifier(typeof(StudentClass), "Id");
+
+            var teachers = (AutoMapper.MapDynamic<Teacher>(data)
+                as IEnumerable<Teacher>).ToList();
+
             return Ok(teachers);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            var teacher = await _context.Teachers.FirstOrDefaultAsync(c => c.Id == id);
+            var data = await _context.Database.GetDbConnection().QueryFirstOrDefaultAsync<dynamic>(@"
+                SELECT T.TeacherId AS Id,
+                       T.FirstName,
+                       T.LastName,
+                       SC.StudentClassId AS StudentClasses_Id,
+                       SC.CourseId AS StudentClasses_CourseId,
+                       SC.TeacherId AS StudentClasses_TeacherId,
+                       SC.StudentId AS StudentClasses_StudentId
+                FROM   Teacher as T INNER JOIN StudentClass as SC
+                ON     SC.TeacherId = T.TeacherId");
+
+            AutoMapper.Configuration.AddIdentifier(typeof(Teacher), "Id");
+            AutoMapper.Configuration.AddIdentifier(typeof(StudentClass), "Id");
+
+            var teacher = (AutoMapper.MapDynamic<Teacher>(data) as Teacher);
             if (teacher == null)
                 return NotFound();
 

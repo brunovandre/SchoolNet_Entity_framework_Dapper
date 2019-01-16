@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace SchoolNet_EntityFramework
+namespace SchoolNet_EntityFramework_Dapper
 {
     public class Program
     {

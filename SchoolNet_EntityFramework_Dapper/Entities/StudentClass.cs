@@ -1,8 +1,10 @@
-﻿namespace SchoolNet_EntityFramework.Entities
+﻿namespace SchoolNet_EntityFramework_Dapper.Entities
 {
     public class StudentClass
     {
-        public int Id { get; set; }
+        public virtual int Id { get; set; }
+
+        private int StudentClassId { get; set; }
         public int CourseId { get; set; }
         public int TeacherId { get; set; }
         public int StudentId { get; set; }

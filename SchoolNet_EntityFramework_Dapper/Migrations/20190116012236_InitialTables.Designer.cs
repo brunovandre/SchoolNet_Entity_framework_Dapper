@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SchoolNet_EntityFramework.Context;
+using SchoolNet_EntityFramework_Dapper.Context;
 
-namespace SchoolNet_EntityFramework.Migrations
+namespace SchoolNet_EntityFramework_Dapper.Migrations
 {
     [DbContext(typeof(SchoolNetContext))]
-    [Migration("20190115015856_InitialTables")]
+    [Migration("20190116012236_InitialTables")]
     partial class InitialTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,13 +20,16 @@ namespace SchoolNet_EntityFramework.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("SchoolNet_EntityFramework.Entities.Course", b =>
+            modelBuilder.Entity("SchoolNet_EntityFramework_Dapper.Entities.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("CourseId")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name");
+
+                    b.Property<bool>("Online");
 
                     b.Property<decimal>("Price");
 
@@ -37,10 +40,11 @@ namespace SchoolNet_EntityFramework.Migrations
                     b.ToTable("Course");
                 });
 
-            modelBuilder.Entity("SchoolNet_EntityFramework.Entities.Student", b =>
+            modelBuilder.Entity("SchoolNet_EntityFramework_Dapper.Entities.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("StudentId")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("Age");
@@ -52,10 +56,11 @@ namespace SchoolNet_EntityFramework.Migrations
                     b.ToTable("Student");
                 });
 
-            modelBuilder.Entity("SchoolNet_EntityFramework.Entities.StudentClass", b =>
+            modelBuilder.Entity("SchoolNet_EntityFramework_Dapper.Entities.StudentClass", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("StudentClassId")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("CourseId");
@@ -75,10 +80,11 @@ namespace SchoolNet_EntityFramework.Migrations
                     b.ToTable("StudentClass");
                 });
 
-            modelBuilder.Entity("SchoolNet_EntityFramework.Entities.Teacher", b =>
+            modelBuilder.Entity("SchoolNet_EntityFramework_Dapper.Entities.Teacher", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("TeacherId")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FirstName");
@@ -90,19 +96,19 @@ namespace SchoolNet_EntityFramework.Migrations
                     b.ToTable("Teacher");
                 });
 
-            modelBuilder.Entity("SchoolNet_EntityFramework.Entities.StudentClass", b =>
+            modelBuilder.Entity("SchoolNet_EntityFramework_Dapper.Entities.StudentClass", b =>
                 {
-                    b.HasOne("SchoolNet_EntityFramework.Entities.Course", "Course")
+                    b.HasOne("SchoolNet_EntityFramework_Dapper.Entities.Course", "Course")
                         .WithMany("StudentClasses")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("SchoolNet_EntityFramework.Entities.Student", "Student")
+                    b.HasOne("SchoolNet_EntityFramework_Dapper.Entities.Student", "Student")
                         .WithMany("StudentClasses")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("SchoolNet_EntityFramework.Entities.Teacher", "Teacher")
+                    b.HasOne("SchoolNet_EntityFramework_Dapper.Entities.Teacher", "Teacher")
                         .WithMany("StudentClasses")
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade);

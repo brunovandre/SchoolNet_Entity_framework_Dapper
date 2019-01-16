@@ -1,12 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SchoolNet_EntityFramework.Context.Mappings;
-using SchoolNet_EntityFramework.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SchoolNet_EntityFramework_Dapper.Context.Mappings;
+using SchoolNet_EntityFramework_Dapper.Entities;
 
-namespace SchoolNet_EntityFramework.Context
+namespace SchoolNet_EntityFramework_Dapper.Context
 {
     public class SchoolNetContext : DbContext
     {

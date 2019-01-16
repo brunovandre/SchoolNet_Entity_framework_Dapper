@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SchoolNet_EntityFramework.Context;
-using SchoolNet_EntityFramework.Entities;
+using SchoolNet_EntityFramework_Dapper.Context;
+using SchoolNet_EntityFramework_Dapper.Entities;
 
-namespace SchoolNet_EntityFramework.Controllers
+namespace SchoolNet_EntityFramework_Dapper.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

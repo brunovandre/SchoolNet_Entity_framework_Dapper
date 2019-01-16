@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SchoolNet_EntityFramework.Context;
-using SchoolNet_EntityFramework.Entities;
+using SchoolNet_EntityFramework_Dapper.Context;
+using SchoolNet_EntityFramework_Dapper.Entities;
+using System.Threading.Tasks;
 
-namespace SchoolNet_EntityFramework.Controllers
+namespace SchoolNet_EntityFramework_Dapper.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -24,16 +21,25 @@ namespace SchoolNet_EntityFramework.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var courses = await _context.Courses.ToListAsync();
+            var courses = await _context.Database.GetDbConnection().QueryAsync<Course>(@"
+                SELECT Course.CourseId as Id,
+                       Course.*
+                FROM   Course");
+
             return Ok(courses);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            var course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
-            if (course == null)
-                return NotFound();
+            var course = await _context.Database.GetDbConnection().QueryFirstOrDefaultAsync<Course>(@"
+                SELECT Course.CourseId as Id,
+                       Course.*
+                FROM   Course
+                WHERE CourseId = @id",
+                new { id});
+
+            if (course == null) return NotFound();
 
             return Ok(course);
         }
@@ -51,7 +57,12 @@ namespace SchoolNet_EntityFramework.Controllers
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Put([FromBody] Course course, int id)
         {
-            if (!await _context.Courses.AnyAsync(c => c.Id == id)) return NotFound();
+            var entityId = await _context.Database.GetDbConnection().QueryFirstOrDefaultAsync<int>(@"
+                SELECT Id from Course
+                WHERE Id = @id",
+                new { id});
+
+            if (entityId == default(int)) return NotFound();
 
             _context.Entry(course).State = EntityState.Modified;
 
@@ -65,7 +76,12 @@ namespace SchoolNet_EntityFramework.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            if (!await _context.Courses.AnyAsync(c => c.Id == id)) return NotFound();
+            var entityId = await _context.Database.GetDbConnection().QueryFirstOrDefaultAsync<int>(@"
+                SELECT Id from Course
+                WHERE Id = @id",
+                new { id });
+
+            if (entityId == default(int)) return NotFound();
 
             var entity = new Course() { Id = id };
             _context.Courses.Attach(entity);

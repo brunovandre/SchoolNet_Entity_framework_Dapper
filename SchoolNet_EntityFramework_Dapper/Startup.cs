@@ -11,9 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SchoolNet_EntityFramework.Context;
+using SchoolNet_EntityFramework_Dapper.Context;
 
-namespace SchoolNet_EntityFramework
+namespace SchoolNet_EntityFramework_Dapper
 {
     public class Startup
     {
@@ -46,8 +46,6 @@ namespace SchoolNet_EntityFramework
             {
                 app.UseHsts();
             }
-
-            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

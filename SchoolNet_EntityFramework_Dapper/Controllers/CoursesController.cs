@@ -58,8 +58,8 @@ namespace SchoolNet_EntityFramework_Dapper.Controllers
         public async Task<IActionResult> Put([FromBody] Course course, int id)
         {
             var entityId = await _context.Database.GetDbConnection().QueryFirstOrDefaultAsync<int>(@"
-                SELECT Id from Course
-                WHERE Id = @id",
+                SELECT CourseId from Course
+                WHERE CourseId = @id",
                 new { id});
 
             if (entityId == default(int)) return NotFound();
@@ -77,8 +77,8 @@ namespace SchoolNet_EntityFramework_Dapper.Controllers
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var entityId = await _context.Database.GetDbConnection().QueryFirstOrDefaultAsync<int>(@"
-                SELECT Id from Course
-                WHERE Id = @id",
+                SELECT CourseId from Course
+                WHERE CourseId = @id",
                 new { id });
 
             if (entityId == default(int)) return NotFound();

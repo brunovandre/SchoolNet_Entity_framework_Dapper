@@ -34,9 +34,10 @@ namespace SchoolNet_EntityFramework_Dapper.Controllers
                        SC.CourseId AS StudentClasses_CourseId,
                        SC.TeacherId AS StudentClasses_TeacherId,
                        SC.StudentId AS StudentClasses_StudentId
-                FROM   Teacher as T INNER JOIN StudentClass as SC
+                FROM   Teacher as T LEFT JOIN StudentClass as SC
                 ON     SC.TeacherId = T.TeacherId");
 
+            AutoMapper.Cache.ClearAllCaches();
             AutoMapper.Configuration.AddIdentifier(typeof(Teacher), "Id");
             AutoMapper.Configuration.AddIdentifier(typeof(StudentClass), "Id");
 
@@ -57,9 +58,12 @@ namespace SchoolNet_EntityFramework_Dapper.Controllers
                        SC.CourseId AS StudentClasses_CourseId,
                        SC.TeacherId AS StudentClasses_TeacherId,
                        SC.StudentId AS StudentClasses_StudentId
-                FROM   Teacher as T INNER JOIN StudentClass as SC
-                ON     SC.TeacherId = T.TeacherId");
+                FROM   Teacher AS T LEFT JOIN StudentClass as SC
+                ON     T.TeacherId = SC.TeacherId 
+                WHERE  T.TeacherId = @id",
+                new { id});
 
+            AutoMapper.Cache.ClearAllCaches();
             AutoMapper.Configuration.AddIdentifier(typeof(Teacher), "Id");
             AutoMapper.Configuration.AddIdentifier(typeof(StudentClass), "Id");
 

@@ -14,5 +14,10 @@ namespace SchoolNet_EntityFramework_Dapper.Entities
         public string LastName { get; set; }
 
         public virtual ICollection<StudentClass> StudentClasses { get; set; }
+
+        public Teacher()
+        {
+            StudentClasses = new HashSet<StudentClass>();
+        }
     }
 }

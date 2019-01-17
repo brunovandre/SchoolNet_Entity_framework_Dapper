@@ -16,5 +16,10 @@ namespace SchoolNet_EntityFramework_Dapper.Entities
         public bool Online { get; set; }
 
         public virtual ICollection<StudentClass> StudentClasses { get; set; }
+
+        public Course()
+        {
+            StudentClasses = new HashSet<StudentClass>();
+        }
     }
 }

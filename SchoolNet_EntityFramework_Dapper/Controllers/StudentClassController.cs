@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,25 +25,70 @@ namespace SchoolNet_EntityFramework_Dapper.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var courses = await _context.StudentClasses.Include(sc => sc.Course)
-                                                        .Include(sc => sc.Student)
-                                                        .Include(sc => sc.Teacher)
-                                                        .ToListAsync();
-            return Ok(courses);
+            var studentClasses = await _context.Database.GetDbConnection().QueryAsync<StudentClass, Course, Student, Teacher, StudentClass>(@"
+               SELECT SC.StudentClassId AS Id,
+                      SC.*,
+                      C.*,  
+                      S.*,
+                      T.*
+               FROM StudentClass as SC INNER JOIN Course as C
+               ON SC.CourseId = C.CourseId
+               INNER JOIN Student as S
+               ON SC.StudentId = S.StudentId
+               INNER JOIN Teacher as T
+               ON SC.TeacherId = T.TeacherId",
+               map: (sc, c, s, t) =>
+               {                   
+                   sc.Course = c;
+                   sc.Course.Id = sc.CourseId;
+                   sc.Student = s;
+                   sc.Student.Id = sc.StudentId;
+                   sc.Teacher = t;
+                   sc.Teacher.Id = sc.TeacherId;
+
+                   return sc;
+               },
+               splitOn: "CourseId, StudentId, TeacherId"
+            );
+
+            return Ok(studentClasses);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            var course = await _context.StudentClasses.Include(sc => sc.Course)
-                                                      .Include(sc => sc.Student)
-                                                      .Include(sc => sc.Teacher)
-                                                      .FirstOrDefaultAsync(c => c.Id == id);
+            var studentClass = await _context.Database.GetDbConnection().QueryAsync<StudentClass, Course, Student, Teacher, StudentClass>(@"
+               SELECT SC.StudentClassId AS Id,
+                      SC.*,
+                      C.*,  
+                      S.*,
+                      T.*
+               FROM StudentClass as SC INNER JOIN Course as C
+               ON SC.CourseId = C.CourseId
+               INNER JOIN Student as S
+               ON SC.StudentId = S.StudentId
+               INNER JOIN Teacher as T
+               ON SC.TeacherId = T.TeacherId
+               WHERE SC.StudentClassId = @id",
+               map: (sc, c, s, t) =>
+               {
+                   sc.Course = c;
+                   sc.Course.Id = sc.CourseId;
+                   sc.Student = s;
+                   sc.Student.Id = sc.StudentId;
+                   sc.Teacher = t;
+                   sc.Teacher.Id = sc.TeacherId;
 
-            if (course == null)
+                   return sc;
+               },
+               splitOn: "CourseId, StudentId, TeacherId",
+               param: new { id }
+            );
+
+            if (studentClass == null || !studentClass.Any())
                 return NotFound();
 
-            return Ok(course);
+            return Ok(studentClass.FirstOrDefault());
         }
 
         [HttpPost]
@@ -58,7 +104,12 @@ namespace SchoolNet_EntityFramework_Dapper.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            if (!await _context.StudentClasses.AnyAsync(c => c.Id == id)) return NotFound();
+            var entityId = await _context.Database.GetDbConnection().QueryFirstOrDefaultAsync<int>(@"
+                SELECT StudentClassId from StudentClass
+                WHERE StudentClassId = @id",
+                new { id });
+
+            if (entityId == default(int)) return NotFound();
 
             var entity = new StudentClass() { Id = id };
             _context.StudentClasses.Attach(entity);
